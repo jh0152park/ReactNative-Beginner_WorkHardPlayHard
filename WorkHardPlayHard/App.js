@@ -11,7 +11,8 @@ import { useState } from "react";
 
 export default function App() {
     const [work, setWork] = useState(true);
-    const [actionItem, setActionItem] = useState("");
+    const [input, setInput] = useState("");
+    const [actionItem, setActionItem] = useState({});
 
     function onWorkPress() {
         setWork(true);
@@ -22,7 +23,21 @@ export default function App() {
     }
 
     function onChangeText(item) {
-        setActionItem(item);
+        setInput(item);
+    }
+
+    function addActionItem() {
+        if (input === "") {
+            return;
+        }
+
+        setActionItem(
+            Object.assign({}, actionItem, {
+                [Date.now()]: { item: input, work: work },
+            })
+        );
+        console.log(actionItem);
+        setInput("");
     }
 
     return (
@@ -52,7 +67,9 @@ export default function App() {
             </View>
 
             <TextInput
+                onSubmitEditing={addActionItem}
                 onChangeText={onChangeText}
+                value={input}
                 placeholder={work ? "What you gonna do?" : "Let's play!"}
                 placeholderTextColor={"black"}
                 returnKeyType="done"
