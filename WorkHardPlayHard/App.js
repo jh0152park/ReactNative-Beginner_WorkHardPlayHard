@@ -8,7 +8,10 @@ import {
     ScrollView,
 } from "react-native";
 import { theme } from "./color";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const STORAGE_KEY = "@action_items";
 
 export default function App() {
     const [work, setWork] = useState(true);
@@ -27,19 +30,33 @@ export default function App() {
         setInput(item);
     }
 
-    function addActionItem() {
+    async function addActionItem() {
         if (input === "") {
             return;
         }
 
-        setActionItem(
-            Object.assign({}, actionItem, {
-                [Date.now()]: { item: input, work: work },
-            })
-        );
-        console.log(actionItem);
+        const newActionItem = Object.assign({}, actionItem, {
+            [Date.now()]: { item: input, work: work },
+        });
+
+        setActionItem(JSON.parse(data));
+        await saveActionItem(newActionItem);
         setInput("");
     }
+
+    async function saveActionItem(actionItems) {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(actionItems));
+    }
+
+    async function getActionItem() {
+        const data = await AsyncStorage.getItem(STORAGE_KEY);
+        setActionItem(JSON.parse(data));
+        return data !== null ? JSON.parse(data) : null;
+    }
+
+    useEffect(() => {
+        getActionItem();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -78,13 +95,15 @@ export default function App() {
             />
 
             <ScrollView>
-                {Object.keys(actionItem).map((key) => (
-                    <View key={key} style={styles.actionItem}>
-                        <Text style={styles.actionItemText}>
-                            {actionItem[key].item}
-                        </Text>
-                    </View>
-                ))}
+                {Object.keys(actionItem).map((key) =>
+                    actionItem[key].work === work ? (
+                        <View key={key} style={styles.actionItem}>
+                            <Text style={styles.actionItemText}>
+                                {actionItem[key].item}
+                            </Text>
+                        </View>
+                    ) : null
+                )}
             </ScrollView>
         </View>
     );
