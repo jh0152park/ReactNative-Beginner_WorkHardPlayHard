@@ -5,6 +5,7 @@ import {
     View,
     TouchableOpacity,
     TextInput,
+    ScrollView,
 } from "react-native";
 import { theme } from "./color";
 import { useState } from "react";
@@ -75,6 +76,16 @@ export default function App() {
                 returnKeyType="done"
                 style={styles.input}
             />
+
+            <ScrollView>
+                {Object.keys(actionItem).map((key) => (
+                    <View key={key} style={styles.actionItem}>
+                        <Text style={styles.actionItemText}>
+                            {actionItem[key].item}
+                        </Text>
+                    </View>
+                ))}
+            </ScrollView>
         </View>
     );
 }
@@ -99,7 +110,20 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 20,
         borderRadius: 30,
-        marginTop: 20,
+        marginVertical: 50,
         fontSize: 15,
+    },
+
+    actionItem: {
+        backgroundColor: theme.gray,
+        marginBottom: 10,
+        paddingVertical: 25,
+        paddingHorizontal: 40,
+        borderRadius: 15,
+    },
+    actionItemText: {
+        color: "whitesmoke",
+        fontSize: 20,
+        fontWeight: "bold",
     },
 });
