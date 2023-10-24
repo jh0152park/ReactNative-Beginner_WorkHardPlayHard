@@ -15,6 +15,12 @@ import { Fontisto } from "@expo/vector-icons";
 
 const STORAGE_KEY = "@action_items";
 
+/**
+ * Challenge
+ * 1. Register when was my last stay momment
+ * 2. Create a new done feature to each item
+ * 3. Edit a item
+ */
 export default function App() {
     const [work, setWork] = useState(true);
     const [input, setInput] = useState("");
@@ -47,13 +53,26 @@ export default function App() {
     }
 
     async function saveActionItem(actionItems) {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(actionItems));
+        try {
+            await AsyncStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(actionItems)
+            );
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     async function getActionItem() {
-        const data = await AsyncStorage.getItem(STORAGE_KEY);
-        setActionItem(JSON.parse(data));
-        return data !== null ? JSON.parse(data) : null;
+        try {
+            const data = await AsyncStorage.getItem(STORAGE_KEY);
+            if (data !== null) {
+                setActionItem(JSON.parse(data));
+                return JSON.parse(data);
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     function deleteActionItem(id) {
