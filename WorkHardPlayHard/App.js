@@ -6,10 +6,12 @@ import {
     TouchableOpacity,
     TextInput,
     ScrollView,
+    Alert,
 } from "react-native";
 import { theme } from "./color";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Fontisto } from "@expo/vector-icons";
 
 const STORAGE_KEY = "@action_items";
 
@@ -39,7 +41,7 @@ export default function App() {
             [Date.now()]: { item: input, work: work },
         });
 
-        setActionItem(JSON.parse(data));
+        setActionItem(newActionItem);
         await saveActionItem(newActionItem);
         setInput("");
     }
@@ -52,6 +54,24 @@ export default function App() {
         const data = await AsyncStorage.getItem(STORAGE_KEY);
         setActionItem(JSON.parse(data));
         return data !== null ? JSON.parse(data) : null;
+    }
+
+    function deleteActionItem(id) {
+        Alert.alert("Do you really want to delete it?", "", [
+            { text: "Cancel", style: "destructive" },
+            {
+                text: "Ok",
+                onPress: async () => {
+                    const newActionItem = { ...actionItem };
+                    delete newActionItem[id];
+
+                    setActionItem(newActionItem);
+                    await saveActionItem(newActionItem);
+                },
+            },
+        ]);
+
+        return;
     }
 
     useEffect(() => {
@@ -101,6 +121,11 @@ export default function App() {
                             <Text style={styles.actionItemText}>
                                 {actionItem[key].item}
                             </Text>
+                            <TouchableOpacity
+                                onPress={() => deleteActionItem(key)}
+                            >
+                                <Fontisto name="trash" size={24} color="grey" />
+                            </TouchableOpacity>
                         </View>
                     ) : null
                 )}
@@ -137,8 +162,11 @@ const styles = StyleSheet.create({
         backgroundColor: theme.gray,
         marginBottom: 10,
         paddingVertical: 25,
-        paddingHorizontal: 40,
+        paddingHorizontal: 30,
         borderRadius: 15,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignContent: "center",
     },
     actionItemText: {
         color: "whitesmoke",
