@@ -1,19 +1,63 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    TextInput,
+} from "react-native";
 import { theme } from "./color";
+import { useState } from "react";
 
 export default function App() {
+    const [work, setWork] = useState(true);
+    const [actionItem, setActionItem] = useState("");
+
+    function onWorkPress() {
+        setWork(true);
+    }
+
+    function onPlayPress() {
+        setWork(false);
+    }
+
+    function onChangeText(item) {
+        setActionItem(item);
+    }
+
     return (
         <View style={styles.container}>
             <StatusBar style="auto" />
             <View style={styles.header}>
-                <TouchableOpacity>
-                    <Text style={styles.buttonText}>Work</Text>
+                <TouchableOpacity onPress={onWorkPress}>
+                    <Text
+                        style={{
+                            ...styles.buttonText,
+                            color: work ? "whitesmoke" : theme.gray,
+                        }}
+                    >
+                        Work
+                    </Text>
                 </TouchableOpacity>
-                <TouchableOpacity>
-                    <Text style={styles.buttonText}>Play</Text>
+                <TouchableOpacity onPress={onPlayPress}>
+                    <Text
+                        style={{
+                            ...styles.buttonText,
+                            color: !work ? "whitesmoke" : theme.gray,
+                        }}
+                    >
+                        Play
+                    </Text>
                 </TouchableOpacity>
             </View>
+
+            <TextInput
+                onChangeText={onChangeText}
+                placeholder={work ? "What you gonna do?" : "Let's play!"}
+                placeholderTextColor={"black"}
+                returnKeyType="done"
+                style={styles.input}
+            />
         </View>
     );
 }
@@ -30,8 +74,15 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     buttonText: {
-        color: "whitesmoke",
         fontSize: 35,
         fontWeight: "bold",
+    },
+    input: {
+        backgroundColor: "whitesmoke",
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 30,
+        marginTop: 20,
+        fontSize: 15,
     },
 });
